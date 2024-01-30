@@ -2,18 +2,26 @@ import { useState } from 'react'
 const Header = ({text}) => (<h1>{text}</h1>)
 const Button = ({onSmash, text}) => (<button onClick={onSmash}>{text}</button>)
 const Statistics = ({goodNumber, neutralNumber, badNumber, totalNumber}) => {
-    const avg = totalNumber !== 0 ?  (goodNumber - badNumber)/totalNumber : 0;
-    const positivePer = totalNumber !== 0 ? (goodNumber*100)/totalNumber : 0;
-    return(
-        <>
-            <p>good {goodNumber}</p>
-            <p>neutral {neutralNumber}</p>
-            <p>bad {badNumber}</p>
-            <p>all {totalNumber}</p>
-            <p>average: {avg}</p>
-            <p>positive {positivePer} %</p>
-        </>
-    )
+    if(totalNumber!==0){
+        const avg = (goodNumber - badNumber)/totalNumber;
+        const positivePer = (goodNumber*100)/totalNumber;
+        return (
+            <>
+                <p>good {goodNumber}</p>
+                <p>neutral {neutralNumber}</p>
+                <p>bad {badNumber}</p>
+                <p>all {totalNumber}</p>
+                <p>average: {avg}</p>
+                <p>positive {positivePer} %</p>
+            </>
+        )
+    } else {
+        return (
+            <>
+                <p>No feedback given</p>
+            </>
+        )
+    }
 }
 function App() {
     const [good, setGood] = useState(0);
