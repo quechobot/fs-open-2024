@@ -13,12 +13,19 @@ function App() {
         'The only way to go fast, is to go well.'
     ];
     const [selected, setSelected] = useState(0);
+    const [points, setPoints] = useState(Array(anecdotes.length).fill(0));
     const randNumber = number => Math.floor(Math.random() * number);
-    const randHandler = () => setSelected(randNumber(anecdotes.length-1));
+    const randHandler = () => setSelected(randNumber(anecdotes.length));
+    const voteHandler = () => {
+        let pointsCpy = [...points];
+        pointsCpy[selected]+=1;
+        setPoints(pointsCpy);
+    }
     return (
         <>
-            <RandAnecdote text={anecdotes[selected]}/>
-            <Button onSmash={randHandler} text={"next anecdote"}/>
+            <RandAnecdote text={anecdotes[selected]} />
+            <Button onSmash={voteHandler} text={"vote"}/>
+            <Button onSmash={randHandler} text={"next anecdote"} />
         </>
     )
 }
