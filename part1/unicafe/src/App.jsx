@@ -1,20 +1,22 @@
 import { useState } from 'react'
 const Header = ({text}) => (<h1>{text}</h1>)
 const Button = ({onSmash, text}) => (<button onClick={onSmash}>{text}</button>)
-const StatisticLine = ({text, value}) => (<p>{text} {value}</p>)
+const StatisticLine = ({text, value}) => (<tr><td>{text}</td><td>{value}</td></tr>)
 const Statistics = ({goodNumber, neutralNumber, badNumber, totalNumber}) => {
     if(totalNumber!==0){
         const avg = (goodNumber - badNumber)/totalNumber;
         const positivePer = (goodNumber*100)/totalNumber;
         return (
-            <div>
-                <StatisticLine text={"good"} value={goodNumber} />
-                <StatisticLine text={"neutral"} value={neutralNumber} />
-                <StatisticLine text={"bad"} value={badNumber} />
-                <StatisticLine text={"all"} value={totalNumber} />
-                <StatisticLine text={"average"} value={avg} />
-                <StatisticLine text={"positive"} value={positivePer + " %"} />
-            </div>
+            <table>
+                <tbody>
+                    <StatisticLine text={"good"} value={goodNumber} />
+                    <StatisticLine text={"neutral"} value={neutralNumber} />
+                    <StatisticLine text={"bad"} value={badNumber} />
+                    <StatisticLine text={"all"} value={totalNumber} />
+                    <StatisticLine text={"average"} value={avg} />
+                    <StatisticLine text={"positive"} value={positivePer + " %"} />
+                </tbody>
+            </table>
         );
     } else {
         return (
