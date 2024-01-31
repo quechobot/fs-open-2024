@@ -1,6 +1,31 @@
 import { useState } from 'react'
+const Header = ({text}) => (<h1>{text}</h1>)
 const Button = ({text, onSmash}) => (<button onClick={onSmash}>{text}</button>)
-const RandAnecdote= ({text}) => (<h4>{text}</h4>);
+const Anecdote = ({text, votes}) => {
+ return(
+     <>
+         <p>{text}</p>
+         <p>has {votes} votes</p>
+     </>
+ )
+}
+const MostVotesAnecdote = ({text, votes}) => {
+    if (votes ===0){
+        return(
+            <>
+                <p>{text}</p>
+            </>
+        )
+    }else{
+        return(
+            <>
+                <p>{text}</p>
+                <p>has {votes} votes</p>
+            </>
+        )
+    }
+}
+
 function App() {
     const anecdotes = [
         'If it hurts, do it more often.',
@@ -21,11 +46,21 @@ function App() {
         pointsCpy[selected]+=1;
         setPoints(pointsCpy);
     }
+    let votes = 0; let mostVoted="no votes yet";
+    points.forEach((e,index)=>{
+        if(e>votes){
+            votes = e;
+            mostVoted = anecdotes[index];
+        }
+    });
     return (
         <>
-            <RandAnecdote text={anecdotes[selected]} />
+            <Header text={"Anecdote of the day"} />
+            <Anecdote text={anecdotes[selected]} votes={points[selected]}/>
             <Button onSmash={voteHandler} text={"vote"}/>
             <Button onSmash={randHandler} text={"next anecdote"} />
+            <Header text={"Anecdote with most votes"} />
+            <MostVotesAnecdote text={mostVoted} votes={votes}/>
         </>
     )
 }
