@@ -42,8 +42,7 @@ const Course = ({course}) =>{
         )
     }
     const Total = ({exercises}) => {
-        let total = 0;
-        exercises.forEach(e=>{total += e});
+        const total = exercises.reduce((a, b)=> a + b);
         return(
             <>
                 <p><strong>total of {total} exercises</strong></p>
