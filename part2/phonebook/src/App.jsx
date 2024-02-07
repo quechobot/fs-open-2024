@@ -9,12 +9,20 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const addPerson = (event) => {
         event.preventDefault();
-        const personObject = {
-            name: newName,
-            id: persons.length+1,
+        const nameToSearch = newName.split(" ").join("").toLowerCase();
+        const nameFound = persons.find(e=> e.name.split(" ").join("").toLowerCase()===nameToSearch);
+        const exist = nameFound!==undefined?true:false;
+        if(!exist){
+            const personObject = {
+                name: newName.trim(),
+                id: persons.length+1,
+            }
+            setPersons(persons.concat(personObject));
+            setNewName('');
+        }else{
+            alert(`"${newName.trim()}" Already exist as "${nameFound.name}" in the phonebook`);
+            setNewName("");
         }
-        setPersons(persons.concat(personObject));
-        setNewName('');
     }
     const handleNameChange = (event) => {
         setNewName(event.target.value)
