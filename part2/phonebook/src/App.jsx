@@ -47,8 +47,8 @@ const App = () => {
     const addPerson = (event) => {
         event.preventDefault();
         const nameToSearch = newName.split(" ").join("").toLowerCase();
-        const nameFound = persons.find(e=> e.name.split(" ").join("").toLowerCase()===nameToSearch);
-        const exist = nameFound!==undefined?true:false;
+        const personFound = persons.find(e=> e.name.split(" ").join("").toLowerCase()===nameToSearch);
+        const exist = personFound!==undefined?true:false;
         if(!exist){
             const personObject = {
                 name: newName.trim(),
@@ -64,9 +64,19 @@ const App = () => {
                     }
                 );
         }else{
-            alert(`"${newName.trim()}" Already exist as "${nameFound.name}" in the phonebook`);
-            setNewName("");
-            setNewNumber('');
+            const confirm = window.confirm(`"${newName.trim()}" is already added in the phonebook as "${personFound.name}", replace the old number "${personFound.number}" with "${newNumber}"?`).valueOf();
+            if(confirm){
+                const personNewNumber = {...personFound, number: newNumber};
+                personService.update(personNewNumber.id, personNewNumber)
+                    .then(returnedPerson=>{
+                        setPersons(persons.map(p=> p.id !== personNewNumber.id ? p:returnedPerson));
+                        setNewName("");
+                        setNewNumber('');
+                    }).catch(error =>{
+                        alert(`${personNewNumber} was already deleted from the server`);
+                        setPersons(persons.filter(n => n.id !== personFound.id));
+                    })
+            }
         }
     }
     const handleNameChange = event=>setNewName(event.target.value)
