@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-const baseUrl = 'http://localhost:3001/persons'
-
+import personService from "./services/Person.js";
 const Filter = ({onType})=>{
     return(
         <div>
@@ -22,17 +21,16 @@ const PersonForm = ({onSub, newName, newNumber, onTypeName, onTypeNumber})=>{
         </div>
     );
 }
-const Persons = ({persons}) => {
+const Persons = ({persons, handleDelete}) => {
     return (
         <>
             <ul>
-                {persons.map(person=><Person key={person.id} person={person}/>)}
+                {persons.map(person=><Person key={person.id} person={person} handleDelete={handleDelete}/>)}
             </ul>
         </>
     );
 }
-const Person = ({person}) =><li>{person.name} {person.number}</li>
-
+const Person = ({person, handleDelete}) => <li>{person.name} {person.number}<button onClick={()=>handleDelete(person)}>delete</button></li>
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
@@ -40,12 +38,11 @@ const App = () => {
     const [filter, setFilter] = useState('');
     const personsToShow = persons.filter(e => e.name.split(" ").join("").toLowerCase().includes(filter));
     const hook = () => {
-        axios.get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data)
+        personService.getAll()
+            .then(initialPersons => {
+                setPersons(initialPersons)
             })
     }
-
     useEffect(hook, [])
     const addPerson = (event) => {
         event.preventDefault();
@@ -58,10 +55,9 @@ const App = () => {
                 number:newNumber.trim(),
                 id: `${persons.length+1}`,
             }
-            axios.post(baseUrl, personObject)
-                .then(response => response.data)
+            personService.create(personObject)
                 .then( returnedPerson =>{
-                    console.log(returnedPerson);
+                    console.log("created Person in server",returnedPerson);
                     setPersons(persons.concat(returnedPerson));
                     setNewNumber('');
                     setNewName('');
@@ -76,6 +72,16 @@ const App = () => {
     const handleNameChange = event=>setNewName(event.target.value)
     const handleNumberChange = event=>setNewNumber(event.target.value)
     const handleFilterChange = event=>setFilter(event.target.value.split(" ").join("").toLowerCase())
+    const handleDelete = person => {
+        const confirm = window.confirm(`delete ${person.name}?`).valueOf();
+        if(confirm){
+            personService.deleteFromServer(person.id)
+                .then(returnedPerson=>{
+                    console.log("Deleted person from server", returnedPerson);
+                    setPersons(persons.filter(p => p.id !== returnedPerson.id));
+                })
+        }
+    }
     return (
         <div>
             <h2>Phonebook</h2>
@@ -83,7 +89,7 @@ const App = () => {
             <h2>Add a new</h2>
             <PersonForm onSub={addPerson} newName={newName} newNumber={newNumber} onTypeName={handleNameChange} onTypeNumber={handleNumberChange} />
             <h2>Numbers</h2>
-            <Persons persons={personsToShow}/>
+            <Persons persons={personsToShow} handleDelete={handleDelete}/>
         </div>
     )
 }
