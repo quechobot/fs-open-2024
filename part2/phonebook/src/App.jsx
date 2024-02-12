@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+const baseUrl = 'http://localhost:3001/persons'
 
 const Filter = ({onType})=>{
     return(
@@ -39,14 +40,11 @@ const App = () => {
     const [filter, setFilter] = useState('');
     const personsToShow = persons.filter(e => e.name.split(" ").join("").toLowerCase().includes(filter));
     const hook = () => {
-        console.log('effect')
         axios.get('http://localhost:3001/persons')
             .then(response => {
-                console.log('promise fulfilled')
                 setPersons(response.data)
             })
     }
-    console.log('render', persons.length, 'persons')
 
     useEffect(hook, [])
     const addPerson = (event) => {
@@ -58,11 +56,17 @@ const App = () => {
             const personObject = {
                 name: newName.trim(),
                 number:newNumber.trim(),
-                id: persons.length+1,
+                id: `${persons.length+1}`,
             }
-            setPersons(persons.concat(personObject));
-            setNewNumber('');
-            setNewName('');
+            axios.post(baseUrl, personObject)
+                .then(response => response.data)
+                .then( returnedPerson =>{
+                    console.log(returnedPerson);
+                    setPersons(persons.concat(returnedPerson));
+                    setNewNumber('');
+                    setNewName('');
+                    }
+                );
         }else{
             alert(`"${newName.trim()}" Already exist as "${nameFound.name}" in the phonebook`);
             setNewName("");
