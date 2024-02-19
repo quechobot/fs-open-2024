@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import axios from 'axios';
-const Countries = ({countries}) => {
+const Countries = ({countries, handlerShow}) => {
     if (countries.length >10){
         return(
             <>
@@ -14,6 +14,7 @@ const Countries = ({countries}) => {
                     {countries.map((element, ekey)=>
                         <li key={ekey}>
                             {element.name.common}
+                            <button onClick={()=>handlerShow(element.name.common)}>show</button>
                         </li>
                     )}
                 </ul>
@@ -56,7 +57,7 @@ const Form = ({onChange, country}) =>{
 function App() {
     const [country, setCountry] = useState('');
     const [countries, setCountries] = useState([]);
-    const countriesToShow = countries.filter(e=>e.name.common.toLowerCase().includes(country));
+    const countriesToShow = countries.filter(e=>e.name.common.toLowerCase().includes(country.toLowerCase()));
     useEffect(() => {
         axios
             .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
@@ -67,10 +68,13 @@ function App() {
     const handleChange = (event)=>{
         setCountry(event.target.value);
     }
+    const handleShow = (countryToShow) =>{
+        setCountry(countryToShow);
+    }
   return (
     <div>
         <Form onChange={handleChange} country={country}/>
-        <Countries countries={countriesToShow}/>
+        <Countries countries={countriesToShow} handlerShow={handleShow}/>
     </div>
   )
 }
